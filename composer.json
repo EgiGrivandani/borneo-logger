@@ -1,0 +1,24 @@
+{
+    "name": "borneo/logger",
+    "description": "A lightweight PHP SDK for sending structured event logs to any HTTP ingest endpoint.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/EgiGrivandani/borneo-logger",
+    "keywords": ["logging", "monitoring", "sdk", "http", "event-log", "audit-trail"],
+    "authors": [
+        {
+            "name": "Egi Grivandani",
+            "homepage": "https://github.com/EgiGrivandani",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Borneo\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
