@@ -86,7 +86,7 @@ class BorneoLogger
         }
 
         $payload = array_merge([
-            'timestamp'  => gmdate('Y-m-d\TH:i:s.') . substr(microtime(), 2, 3) . 'Z',
+            'timestamp'  => static::timestamp(),
             'service'    => $service ?: static::$service,
             'event_type' => $eventType,
             'ip'         => static::getClientIp(),
@@ -220,16 +220,24 @@ class BorneoLogger
     // Instance API — for use with dependency injection
     // -------------------------------------------------------
 
+    /**
+     * Per-instance service name override.
+     * Stored here (not in static) so multiple instances don't pollute each other.
+     */
+    private string $instanceService = '';
+
+    /**
+     * @param string $serviceName  Override service name for this instance only.
+     *                             Does NOT mutate the global static::$service.
+     */
     public function __construct(string $serviceName = '')
     {
-        if ($serviceName) {
-            static::$service = $serviceName;
-        }
+        $this->instanceService = $serviceName;
     }
 
     public function send(string $eventType, array $data = []): void
     {
-        static::log($eventType, $data);
+        static::log($eventType, $data, $this->instanceService);
     }
 
     // -------------------------------------------------------
@@ -275,6 +283,20 @@ class BorneoLogger
 
         // Fire & forget — does not wait for response to avoid blocking
         @file_get_contents(static::$endpoint, false, $context);
+    }
+
+    /**
+     * Generate an ISO 8601 UTC timestamp with millisecond precision.
+     * Uses microtime(true) for accurate sub-second values.
+     *
+     * Example output: "2026-06-10T09:42:24.123Z"
+     */
+    private static function timestamp(): string
+    {
+        $t = microtime(true);
+        return gmdate('Y-m-d\TH:i:s.', (int) $t)
+            . sprintf('%03d', ($t - (int) $t) * 1000)
+            . 'Z';
     }
 
     private static function getClientIp(): string

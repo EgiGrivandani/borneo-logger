@@ -8,12 +8,16 @@
     "authors": [
         {
             "name": "Egi Grivandani",
+            "email": "egi@borneo.dev",
             "homepage": "https://github.com/EgiGrivandani",
             "role": "Developer"
         }
     ],
     "require": {
         "php": ">=8.0"
+    },
+    "suggest": {
+        "psr/log": "PSR-3 LoggerInterface — if you want to type-hint BorneoLogger in DI containers that expect a standard logger."
     },
     "autoload": {
         "psr-4": {
