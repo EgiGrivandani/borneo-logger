@@ -181,10 +181,10 @@ Each log entry is dispatched as a JSON object (one line per entry in Mode 1):
 use Borneo\BorneoLogger;
 
 BorneoLogger::configure(
-    endpoint: getenv('LOGGER_ENDPOINT') ?: '',
-    apiKey:   getenv('LOGGER_API_KEY')  ?: '',
-    service:  getenv('LOGGER_SERVICE')  ?: 'my-app',
-    logFile:  getenv('LOGGER_LOG_FILE') ?: '',
+    endpoint: env('LOGGER_ENDPOINT', ''),
+    apiKey:   env('LOGGER_API_KEY',  ''),
+    service:  env('LOGGER_SERVICE',  'my-app'),
+    logFile:  env('LOGGER_LOG_FILE', ''), // empty = use HTTP mode
 );
 ```
 

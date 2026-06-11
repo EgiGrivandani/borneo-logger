@@ -80,23 +80,28 @@ class BorneoLogger
      */
     public static function log(string $eventType, array $data = [], string $service = ''): void
     {
-        // Auto-encode metadata array → JSON string (ClickHouse requires String type)
-        if (isset($data['metadata']) && is_array($data['metadata'])) {
-            $data['metadata'] = json_encode($data['metadata'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        try {
+            // Auto-encode metadata array → JSON string (ClickHouse requires String type)
+            if (isset($data['metadata']) && is_array($data['metadata'])) {
+                $data['metadata'] = json_encode($data['metadata'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+
+            $payload = array_merge([
+                'timestamp'  => static::timestamp(),
+                'service'    => $service ?: static::$service,
+                'event_type' => $eventType,
+                'ip'         => static::getClientIp(),
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+                'status'     => 'success',
+                'user_id'    => 0,
+                'metadata'   => '{}',
+            ], $data);
+
+            static::dispatch($payload);
+        } catch (\Throwable $e) {
+            // Logging must NEVER break the main application.
+            // Silently swallow all errors — the app continues normally.
         }
-
-        $payload = array_merge([
-            'timestamp'  => static::timestamp(),
-            'service'    => $service ?: static::$service,
-            'event_type' => $eventType,
-            'ip'         => static::getClientIp(),
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
-            'status'     => 'success',
-            'user_id'    => 0,
-            'metadata'   => '{}',
-        ], $data);
-
-        static::dispatch($payload);
     }
 
     // -------------------------------------------------------
